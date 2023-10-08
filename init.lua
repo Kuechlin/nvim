@@ -276,6 +276,7 @@ local servers = {
   clangd = {},
   -- gopls = {},
   -- pyright = {},
+  bashls = {},
   rust_analyzer = {},
   tsserver = {},
   html = { filetypes = { 'html', 'twig', 'hbs'} },
