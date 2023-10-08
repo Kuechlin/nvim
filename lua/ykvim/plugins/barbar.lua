@@ -8,7 +8,8 @@ return {
   config = function ()
     require('barbar').setup {
       sidebar_filetypes = {
-        NvimTree = true,
+        NvimTree = { text =  'explorer' },
+        undotree = { text = 'undotree' }
       }
     }
     local map = vim.api.nvim_set_keymap

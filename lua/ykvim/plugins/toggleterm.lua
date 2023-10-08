@@ -2,9 +2,9 @@ return {
   'akinsho/toggleterm.nvim',
   version = "*",
   config = function ()
-    require('toggleterm').setup {
-      open_mapping = [[<leader>tt]]
-    }
+    require('toggleterm').setup()
+
+    vim.keymap.set('n', '<leader>tt', vim.cmd.ToggleTerm)
 
     function _G.set_terminal_keymaps()
       local opts = {noremap = true}
