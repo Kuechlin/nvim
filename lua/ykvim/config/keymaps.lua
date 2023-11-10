@@ -2,6 +2,9 @@ local map = vim.keymap.set
 
 -- [[ Basic Keymaps ]]
 
+-- save file
+map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
+
 -- format with prettier
 map({ 'n', 'v'}, '<leader>fm', '<Cmd>:w<CR><Cmd>!prettier --write %<CR><Enter>')
 
