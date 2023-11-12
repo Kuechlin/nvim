@@ -8,7 +8,7 @@ return {
       local theme = require('onedark')
       theme.setup {
         style = 'darker',
-        transparent = true,
+        transparent = false,
         lualine = {
           transparent = false
         }
