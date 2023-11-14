@@ -7,7 +7,6 @@ function M.setup()
 
   _load("settings")
   _load("keymaps")
-  _load("lsp")
   _load("cmp")
 end
 
