@@ -9,12 +9,15 @@ return {
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+      { 'j-hui/fidget.nvim',       tag = 'legacy', opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
+
+      -- code action dialog
+      'weilbith/nvim-code-action-menu',
     },
-    config = function ()
+    config = function()
       -- [[ Configure LSP ]]
       --  This function gets run when an LSP connects to a particular buffer.
       local on_attach = function(_, bufnr)
@@ -27,7 +30,7 @@ return {
         end
 
         nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-        nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+        nmap('<leader>ca', '<Cmd>CodeActionMenu<CR>', '[C]ode [A]ction')
 
         nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
         nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -61,7 +64,16 @@ return {
       --  the `settings` field of the server config. You must look up that documentation yourself.
       --
       --  If you want to override the default filetypes that your language server will attach to you can
-      --  define the property 'filetypes' to the map in question.
+      --  define the 
+      local function organize_imports()
+        local params = {
+          command = "_typescript.organizeImports",
+          arguments = { vim.api.nvim_buf_get_name(0) },
+          title = "",
+        }
+        vim.lsp.buf.execute_command(params)
+      end
+
       local servers = {
         clangd = {},
         gopls = {},
@@ -69,8 +81,8 @@ return {
         -- pyright = {},
         bashls = {},
         rust_analyzer = {},
-        --tsserver = {},
-        html = { filetypes = { 'html', 'twig', 'hbs'} },
+        tsserver = {},
+        html = { filetypes = { 'html', 'twig', 'hbs' } },
 
         lua_ls = {
           Lua = {
@@ -106,13 +118,13 @@ return {
       }
 
 
-      -- [[ go ]] 
+      -- [[ go ]]
       -- format on save
       vim.api.nvim_create_autocmd('BufWritePre', {
-        pattern ={ "*.go", "*.ts", "*.tsx" },
+        pattern = { "*.go", "*.ts", "*.tsx" },
         callback = function()
           local params = vim.lsp.util.make_range_params()
-          params.context = {only = {"source.organizeImports"}}
+          params.context = { only = { "source.organizeImports" } }
           -- buf_request_sync defaults to a 1000ms timeout. Depending on your
           -- machine and codebase, you may want longer. Add an additional
           -- argument after params if you find that you have to write the file
@@ -128,17 +140,49 @@ return {
             end
           end
           -- format on save
-          vim.lsp.buf.format({async = false})
+          vim.lsp.buf.format({ async = false })
         end,
       })
     end
   },
   {
-    "pmizio/typescript-tools.nvim",
-    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig"  },
-    opts = {},
-    config = function ()
-    end
-  }
-}
+    'mhartington/formatter.nvim',
+    config = function()
+      local util = require "formatter.util"
 
+      vim.keymap.set({ 'n' }, '<leader>fm', ':FormatWrite<cr>', { desc = '[F]or[m]at' })
+
+      --vim.cmd([[nnoremap <silent> <leader>fm :Format<CR>]])
+      require('formatter').setup({
+        -- Enable or disable logging
+        logging = true,
+        -- Set the log level
+        log_level = vim.log.levels.WARN,
+        filetype = {
+          lua = {
+            require("formatter.filetypes.lua").stylua
+          },
+          typescript = {
+            require('formatter.filetypes.typescript').prettier
+          },
+          typescriptreact = {
+            require('formatter.filetypes.typescript').prettier
+          },
+          javascript = {
+            require('formatter.filetypes.javascript').prettier
+          },
+          json = {
+            require('formatter.filetypes.json').prettier
+          }
+        }
+      })
+    end
+  },
+  --  {
+  --    "pmizio/typescript-tools.nvim",
+  --    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig"  },
+  --    opts = {},
+  --    config = function ()
+  --    end
+  --  }
+}
